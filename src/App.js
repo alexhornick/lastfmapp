@@ -15,10 +15,7 @@ export default class App extends React.Component {
     e.preventDefault();
 
     const { username } = e.target;
-
-
-    console.log(e.target, username.value);
-
+    
     this.setState(prevState => ({
       submitted: true,
       username: username.value
@@ -26,7 +23,6 @@ export default class App extends React.Component {
   };
 
   renderRecentTracks() {
-    console.log(this.state.username);
     return <RecentTrack username={this.state.username} />
   }
 
