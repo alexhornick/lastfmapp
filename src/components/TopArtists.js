@@ -43,8 +43,6 @@ class TopArtists extends React.Component {
             return <div id="loader"></div>
         }
 
-        console.log(this.state.topArtists);
-
         return (
         <div className="animate-bottom">
             <label>Top Artists:</label>
