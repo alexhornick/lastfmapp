@@ -1,22 +1,31 @@
 import React  from 'react';
 import axios from 'axios';
-let apiKey = '{yourapikey}';
-let baseURL = 'https://ws.audioscrobbler.com/2.0';
+import { connect } from "react-redux";
+import Loader from './loader/Loader';
 
-export default class RecentTrack extends React.Component {
+let apiKey = process.env.REACT_APP_API_KEY;
+let baseURL = process.env.REACT_APP_API_URL;
+
+class RecentTrack extends React.Component {
 
       constructor(props) {
         super(props);
+
         this.state = {
-            timerID: null,
             recentTracks: []
         }
       }
 
     fetchRecentTracks() {
+        // for now, if they refresh, go back to home page.
+        // Eventually I'll make this persist.
+        if (!this.props.username.length) {
+            this.props.history.push('/');
+        }
+        let username = this.props.username;
         let getRecentTracks = axios.create({
             baseURL: baseURL,
-            url: `?format=json&method=user.getrecenttracks&user=${this.props.username}&limit=${9}&api_key=${apiKey}`
+            url: `?format=json&method=user.getrecenttracks&user=${username}&limit=${9}&api_key=${apiKey}`
           });
         getRecentTracks()
           .then((response) => {
@@ -26,11 +35,7 @@ export default class RecentTrack extends React.Component {
     }
     
       componentDidMount() {
-        let timerID= setInterval(
-            () => this.fetchRecentTracks(),
-            500
-          );
-        this.setState({timerID});
+        this.fetchRecentTracks();
       }
 
       componentWillUnmount() {
@@ -40,21 +45,19 @@ export default class RecentTrack extends React.Component {
       render() {
 
         if (!this.state.recentTracks.recenttracks) {
-            return <div id="loader"></div>
+            return <Loader/>
         }
 
-        clearInterval(this.state.timerID);
-
         return (
-        <div class="animate-bottom">
+        <div className="animate-bottom">
             <label>Recent Scrobbles:</label>
-            <div class="grid">
+            <div className="grid">
                 {this.state.recentTracks.recenttracks.track.map(
                     (track, index) => 
-                        <div class="cell">
-                            <img key={index} alt='' src={track.image[2]['#text']}/>
+                        <div key={index}className="cell">
+                            <img alt='' src={track.image[2]['#text']}/>
                             <br/>
-                            <span class='trackName'>{track.name}</span>
+                            <span className='trackName'>{track.name}</span>
                         </div>
                     )}
             </div>
@@ -62,3 +65,12 @@ export default class RecentTrack extends React.Component {
         );
       }
 }
+
+const mapStateToProps = function(state) {
+    return {
+      username: state.username,
+      user: state.user
+    }
+  }
+  
+export default connect(mapStateToProps)(RecentTrack);

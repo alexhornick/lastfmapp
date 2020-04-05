@@ -1,30 +1,37 @@
 import './App.css';
 import React from 'react';
-import RecentTrack from './components/RecentTrack';
+import axios from 'axios';
+import { connect } from "react-redux";
 
-export default class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      username: '',
-      submitted: false
-    };
-  }
+let apiKey = process.env.REACT_APP_API_KEY;
+let baseURL = process.env.REACT_APP_API_URL;
 
+class App extends React.Component {
+  
   handleSubmit = e => {
     e.preventDefault();
 
     const { username } = e.target;
-    
-    this.setState(prevState => ({
-      submitted: true,
-      username: username.value
-    }));
-  };
 
-  renderRecentTracks() {
-    return <RecentTrack username={this.state.username} />
-  }
+    let getUserInfo = axios.create({
+      baseURL: baseURL,
+      url: `?format=json&method=user.getinfo&user=${username.value}&limit=${9}&api_key=${apiKey}`
+    });
+    getUserInfo()
+      .then(response => response.data)
+      .then(response => {
+        this.props.dispatch({
+          type: "SET_USER",
+          user: response
+        });
+      });
+
+    this.props.dispatch({
+      type: "SET_USERNAME",
+      username: username.value
+    });
+    this.props.history.push('/dashboard');
+  };
 
   render() {
     return (
@@ -33,13 +40,20 @@ export default class App extends React.Component {
           <form onSubmit={this.handleSubmit}>
             <label>
               Please enter your last.fm username:
-              <input type="text" name="username" value={this.state.value} onChange={this.handleChange} />
+              <input type="text" name="username" required onChange={this.handleChange} />
             </label>
             <input type="submit" value="Submit" />
           </form>
-          {this.state.submitted && this.renderRecentTracks()}
         </header>
       </div>
     );
   }
 }
+
+const mapStateToProps = function (state) {
+  return {
+    username: state.username
+  }
+}
+
+export default connect(mapStateToProps)(App);
