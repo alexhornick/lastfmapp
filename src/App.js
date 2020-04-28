@@ -40,7 +40,7 @@ class App extends React.Component {
           <form onSubmit={this.handleSubmit}>
             <label>
               Please enter your last.fm username:
-              <input type="text" name="username" required onChange={this.handleChange} />
+              <input type="text" name="username" required />
             </label>
             <input type="submit" value="Submit" />
           </form>

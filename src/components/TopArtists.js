@@ -50,7 +50,8 @@ class TopArtists extends React.Component {
                 {this.state.topArtists.topartists.artist.map(
                     (artist, index) => 
                         <div key={index} className="cell">
-                            <span className='trackName'>{artist.name}</span>
+                            <span className='trackName'>{artist.name}</span><br/>
+                            <span className='numScrobbles' alt='Number of Scrobbles'>{artist.playcount} scrobbles</span>
                         </div>
                     )}
             </div>
